@@ -10,11 +10,16 @@ using System.Windows.Forms;
 
 namespace Bootloader_GUI_Windows
 {
-    public partial class Form1 : Form
+    public partial class main_page : Form
     {
-        public Form1()
+        public main_page()
         {
             InitializeComponent();
+        }
+
+        private void OpenFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+
         }
     }
 }
