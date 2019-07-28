@@ -8,13 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-
 namespace Bootloader_GUI_Windows
 {
 
     public partial class main_page : Form
     {
-
         private struct port_settings_t
         {
            public uint    baudrate;                          // Current baudrate of the COM Port 
@@ -30,7 +28,8 @@ namespace Bootloader_GUI_Windows
         // Variable declarations
         port_settings_t current_port_configs;
         SerialPort currentport;
-        String[] port_name_list = null; 
+        String[] port_name_list = null;
+        Timer timer = new System.Windows.Forms.Timer(); 
 
         public main_page()
         {
@@ -48,6 +47,21 @@ namespace Bootloader_GUI_Windows
             currentport = new SerialPort();
             port_name_list = SerialPort.GetPortNames();
             port_selection_combobox.Items.AddRange(port_name_list);
+
+            //Timer initialization for Port name updates 
+            timer.Enabled = true;
+            timer.Interval = 2000;
+            timer.Tick += new EventHandler(updateCOMPorts);
+            timer.Start(); 
+        }
+
+        private void updateCOMPorts(object sender, System.EventArgs e)
+        {
+            timer.Stop(); 
+            port_name_list = SerialPort.GetPortNames();
+            port_selection_combobox.Items.Clear();
+            port_selection_combobox.Items.AddRange(port_name_list);
+            timer.Start();
         }
 
         private void Image_file_browse_button_Click(object sender, EventArgs e)
@@ -96,6 +110,14 @@ namespace Bootloader_GUI_Windows
         {
             currentport.BaudRate = Convert.ToInt32(current_port_configs.baudrate);
             currentport.PortName = current_port_configs.port_name;
+        }
+
+        ~main_page()
+        {
+            // Clear the timer
+            timer.Stop();
+            timer.Enabled = false;
+
         }
     }
 }
