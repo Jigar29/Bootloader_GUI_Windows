@@ -47,7 +47,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.verbose_groupbox = new System.Windows.Forms.GroupBox();
-            this.message_textbox = new System.Windows.Forms.RichTextBox();
+            this.verbose = new System.Windows.Forms.RichTextBox();
             this.image_file_opener_object = new System.Windows.Forms.OpenFileDialog();
             this.status_groupbox.SuspendLayout();
             this.image_selection_groupbox.SuspendLayout();
@@ -146,7 +146,7 @@
             this.close_com_port_after_prog.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.close_com_port_after_prog.Location = new System.Drawing.Point(22, 77);
             this.close_com_port_after_prog.Name = "close_com_port_after_prog";
-            this.close_com_port_after_prog.Size = new System.Drawing.Size(219, 20);
+            this.close_com_port_after_prog.Size = new System.Drawing.Size(219, 19);
             this.close_com_port_after_prog.TabIndex = 9;
             this.close_com_port_after_prog.Text = "Close COM Port After Programming";
             this.close_com_port_after_prog.UseVisualStyleBackColor = true;
@@ -158,10 +158,11 @@
             this.two_stop_bits_chekcbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.two_stop_bits_chekcbox.Location = new System.Drawing.Point(247, 77);
             this.two_stop_bits_chekcbox.Name = "two_stop_bits_chekcbox";
-            this.two_stop_bits_chekcbox.Size = new System.Drawing.Size(84, 20);
+            this.two_stop_bits_chekcbox.Size = new System.Drawing.Size(84, 19);
             this.two_stop_bits_chekcbox.TabIndex = 8;
             this.two_stop_bits_chekcbox.Text = "2 Stop Bits";
             this.two_stop_bits_chekcbox.UseVisualStyleBackColor = true;
+            this.two_stop_bits_chekcbox.CheckedChanged += new System.EventHandler(this.Two_stop_bits_chekcbox_CheckedChanged);
             // 
             // rts_checkbox
             // 
@@ -169,7 +170,7 @@
             this.rts_checkbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rts_checkbox.Location = new System.Drawing.Point(124, 98);
             this.rts_checkbox.Name = "rts_checkbox";
-            this.rts_checkbox.Size = new System.Drawing.Size(50, 20);
+            this.rts_checkbox.Size = new System.Drawing.Size(50, 19);
             this.rts_checkbox.TabIndex = 7;
             this.rts_checkbox.Text = "RTS";
             this.rts_checkbox.UseVisualStyleBackColor = true;
@@ -180,11 +181,12 @@
             this.parity_checkbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.parity_checkbox.Location = new System.Drawing.Point(247, 98);
             this.parity_checkbox.Name = "parity_checkbox";
-            this.parity_checkbox.Size = new System.Drawing.Size(56, 20);
+            this.parity_checkbox.Size = new System.Drawing.Size(56, 19);
             this.parity_checkbox.TabIndex = 6;
             this.parity_checkbox.Text = "Parity";
             this.parity_checkbox.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.parity_checkbox.UseVisualStyleBackColor = true;
+            this.parity_checkbox.CheckedChanged += new System.EventHandler(this.Parity_checkbox_CheckedChanged);
             // 
             // dtr_checkbox
             // 
@@ -192,10 +194,11 @@
             this.dtr_checkbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dtr_checkbox.Location = new System.Drawing.Point(21, 98);
             this.dtr_checkbox.Name = "dtr_checkbox";
-            this.dtr_checkbox.Size = new System.Drawing.Size(51, 20);
+            this.dtr_checkbox.Size = new System.Drawing.Size(51, 19);
             this.dtr_checkbox.TabIndex = 5;
             this.dtr_checkbox.Text = "DTR";
             this.dtr_checkbox.UseVisualStyleBackColor = true;
+            this.dtr_checkbox.CheckedChanged += new System.EventHandler(this.Dtr_checkbox_CheckedChanged);
             // 
             // port_open_close_button
             // 
@@ -264,7 +267,7 @@
             // 
             // verbose_groupbox
             // 
-            this.verbose_groupbox.Controls.Add(this.message_textbox);
+            this.verbose_groupbox.Controls.Add(this.verbose);
             this.verbose_groupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.verbose_groupbox.Location = new System.Drawing.Point(358, 12);
             this.verbose_groupbox.Name = "verbose_groupbox";
@@ -273,14 +276,15 @@
             this.verbose_groupbox.TabStop = false;
             this.verbose_groupbox.Text = "Verbose";
             // 
-            // message_textbox
+            // verbose
             // 
-            this.message_textbox.Location = new System.Drawing.Point(6, 18);
-            this.message_textbox.Name = "message_textbox";
-            this.message_textbox.ReadOnly = true;
-            this.message_textbox.Size = new System.Drawing.Size(274, 315);
-            this.message_textbox.TabIndex = 0;
-            this.message_textbox.Text = "";
+            this.verbose.Location = new System.Drawing.Point(6, 18);
+            this.verbose.Name = "verbose";
+            this.verbose.ReadOnly = true;
+            this.verbose.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.verbose.Size = new System.Drawing.Size(274, 315);
+            this.verbose.TabIndex = 0;
+            this.verbose.Text = "";
             // 
             // main_page
             // 
@@ -324,7 +328,7 @@
         private System.Windows.Forms.ProgressBar statusbar;
         private System.Windows.Forms.Button image_file_browse_button;
         private System.Windows.Forms.RichTextBox image_filepath_textbox;
-        private System.Windows.Forms.RichTextBox message_textbox;
+        private System.Windows.Forms.RichTextBox verbose;
         private System.Windows.Forms.OpenFileDialog image_file_opener_object;
         private System.Windows.Forms.CheckBox close_com_port_after_prog;
         private System.Windows.Forms.CheckBox parity_checkbox;

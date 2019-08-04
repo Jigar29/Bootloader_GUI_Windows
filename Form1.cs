@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO.Ports;
+using System.IO.Ports; 
+
 namespace Bootloader_GUI_Windows
 {
 
@@ -15,14 +16,14 @@ namespace Bootloader_GUI_Windows
     {
         private struct port_settings_t
         {
-           public uint    baudrate;                          // Current baudrate of the COM Port 
-           public bool    isParityRequired;                  // Prity bit needed?
-           public bool    isCloseAfterProgrammingRequested;  // Close after the programming is done requested? 
-           public bool    isDTRRequested;                    // DTR requeted? 
-           public bool    isRTSRequested;                    // RTS Requested? 
-           public bool    isTwoStopBitsRequested;            // Two stop bits requested? 
-           public String  port_name;                         // COM port name 
-           public bool    port_state;                        // Status of the port ( Open or Close )
+           public uint      baudrate;                          // Current baudrate of the COM Port 
+           public Parity    parity;                            // Prity bit needed?
+           public bool      isCloseAfterProgrammingRequested;  // Close after the programming is done requested? 
+           public bool      isDTRRequested;                    // DTR requeted? 
+           public bool      isRTSRequested;                    // RTS Requested? 
+           public StopBits  num_of_stopbits;                   // Two stop bits requested? 
+           public String    port_name;                         // COM port name 
+           public bool      port_state;                        // Status of the port ( Open or Close )
         }
 
         // Variable declarations
@@ -37,11 +38,12 @@ namespace Bootloader_GUI_Windows
 
             // Initializing the port_settings_t members
             current_port_configs.baudrate                           = Convert.ToUInt32(baudrate_combobox.SelectedItem); // baudrate_combobox.SelectedItem
-            current_port_configs.isParityRequired                   = parity_checkbox.Checked;
+            current_port_configs.parity                             = Parity.None;
             current_port_configs.isCloseAfterProgrammingRequested   = close_com_port_after_prog.Checked;
             current_port_configs.isDTRRequested                     = dtr_checkbox.Checked;
             current_port_configs.isRTSRequested                     = rts_checkbox.Checked;
-            current_port_configs.isTwoStopBitsRequested             = two_stop_bits_chekcbox.Checked;
+            current_port_configs.num_of_stopbits                    = StopBits.One;
+            current_port_configs.port_state                         = false; 
 
             //Serial Port Initialization 
             currentport = new SerialPort();
@@ -59,8 +61,10 @@ namespace Bootloader_GUI_Windows
         {
             timer.Stop(); 
             port_name_list = SerialPort.GetPortNames();
+
             port_selection_combobox.Items.Clear();
             port_selection_combobox.Items.AddRange(port_name_list);
+
             timer.Start();
         }
 
@@ -78,8 +82,8 @@ namespace Bootloader_GUI_Windows
             }
             else
             {
-                message_textbox.Text += image_filepath_textbox.Text + " file selected\n";
-                message_textbox.Show();
+                verbose.Text += image_filepath_textbox.Text + " file selected\n";
+                verbose.Show();
             }
 
             image_filepath_textbox.Show();
@@ -88,28 +92,118 @@ namespace Bootloader_GUI_Windows
         private void Baudrate_combobox_SelectedIndexChanged(object sender, EventArgs e)
         {
             current_port_configs.baudrate = Convert.ToUInt32(baudrate_combobox.SelectedItem);
-            message_textbox.Text += "Baudrate is Set to " + current_port_configs.baudrate.ToString() + "bps\n";
-            message_textbox.Show();
+            verbose.Text += "Baudrate is Set to " + current_port_configs.baudrate.ToString() + "bps\n";
+            verbose.Show();
             port_open_close_button.Enabled = true;
         }
 
         private void Port_selection_combobox_SelectedIndexChanged(object sender, EventArgs e)
         {
             current_port_configs.port_name = port_selection_combobox.SelectedItem.ToString();
-            message_textbox.Text += current_port_configs.port_name + " Port Selected\n";
-            message_textbox.Show();
+            verbose.Text += current_port_configs.port_name + " Port Selected\n";
+            verbose.Show();
             baudrate_combobox.Enabled = true;
         }
 
         private void Close_com_port_after_prog_CheckedChanged(object sender, EventArgs e)
         {
-            current_port_configs.isCloseAfterProgrammingRequested = close_com_port_after_prog.Checked; 
+            if (close_com_port_after_prog.Checked)
+            {
+                current_port_configs.isCloseAfterProgrammingRequested = true;
+                verbose.Text += "COM Port will be closed after Programming is done\n"; 
+            }
+            else
+            {
+                current_port_configs.isCloseAfterProgrammingRequested = false;
+                verbose.Text += "COM Port will be closed after Programming is done\n";
+            }
+            verbose.Show(); 
         }
 
         private void Port_open_close_button_Click(object sender, EventArgs e)
         {
-            currentport.BaudRate = Convert.ToInt32(current_port_configs.baudrate);
-            currentport.PortName = current_port_configs.port_name;
+            // Lets determine the current state of the button 
+            if (current_port_configs.port_state == false)         // Port is close at this point
+            {
+                // Lets update the port settings first 
+                current_port_configs.port_state = true;
+
+                //Lets update the name of the button 
+                port_open_close_button.Text = "Close";
+
+                //Lets lock all the buttons which can manipulate the settings while the port is open
+                port_selection_combobox.Enabled     = false;
+                baudrate_combobox.Enabled           = false;
+                close_com_port_after_prog.Enabled   = false;
+                two_stop_bits_chekcbox.Enabled      = false;
+                dtr_checkbox.Enabled                = false;
+                rts_checkbox.Enabled                = false;
+                parity_checkbox.Enabled             = false;
+
+                //Configure the Port properties before opening the port 
+                currentport.BaudRate    = Convert.ToInt32(current_port_configs.baudrate);
+                currentport.PortName    = current_port_configs.port_name;
+                currentport.Parity      = current_port_configs.parity;
+                currentport.StopBits    = current_port_configs.num_of_stopbits;
+                currentport.DtrEnable   = current_port_configs.isRTSRequested;
+                currentport.RtsEnable   = current_port_configs.isRTSRequested; 
+
+                // Lets open the physical ports now
+                currentport.Open();
+                verbose.Text += currentport.PortName + " Opened\n";
+            }
+            else                            // Port is open already 
+            {
+                // Lets update the port settings first 
+                current_port_configs.port_state = false;
+
+                //Lets update the name of the button 
+                port_open_close_button.Text = "Open";
+
+                //Lets lock all the buttons which can manipulate the settings while the port is open
+                port_selection_combobox.Enabled     = true;
+                baudrate_combobox.Enabled           = true;
+                close_com_port_after_prog.Enabled   = true;
+                two_stop_bits_chekcbox.Enabled      = true;
+                dtr_checkbox.Enabled                = true;
+                rts_checkbox.Enabled                = true;
+                parity_checkbox.Enabled             = true;
+
+                // Lets close the physical ports now
+                currentport.Close();
+                verbose.Text += current_port_configs.port_name + " Closed\n";
+            }
+            verbose.Show();
+        }
+
+        private void Two_stop_bits_chekcbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(two_stop_bits_chekcbox.Checked)
+            {
+                current_port_configs.num_of_stopbits = StopBits.Two;
+                verbose.Text += "2 Stop Bits are requested for the transmission frame\n"; 
+            }
+            else
+            {
+                current_port_configs.num_of_stopbits = StopBits.One;
+                verbose.Text += "1 Stop Bit is requested for the transmission frame\n";
+            }
+            verbose.Show(); 
+        }
+
+        private void Parity_checkbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (parity_checkbox.Checked)
+            {
+                current_port_configs.parity = Parity.Even;
+                verbose.Text += "Even Parity Selected\n";
+            }
+            else
+            {
+                current_port_configs.parity = Parity.None;
+                verbose.Text += "No Parity Selected\n"; 
+            }
+            verbose.Show(); 
         }
 
         ~main_page()
@@ -117,6 +211,26 @@ namespace Bootloader_GUI_Windows
             // Clear the timer
             timer.Stop();
             timer.Enabled = false;
+
+        }
+
+        private void Dtr_checkbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if ( dtr_checkbox.Checked )
+            {
+                current_port_configs.isDTRRequested = true;
+                verbose.Text += "DTR Requested\n"; 
+            }
+            else
+            {
+                current_port_configs.isDTRRequested = false;
+                verbose.Text += "DTR is not needed for the Transmission\n";
+            }
+            verbose.Show(); 
+        }
+
+        private void Rts_checkbox_CheckedChanged(object sender, EventArgs e)
+        {
 
         }
     }
