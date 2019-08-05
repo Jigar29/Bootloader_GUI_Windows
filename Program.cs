@@ -16,7 +16,7 @@ namespace Bootloader_GUI_Windows
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new main_page());
+            Application.Run(new MainForm());
         }
     }
 }

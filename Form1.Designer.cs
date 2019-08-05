@@ -1,6 +1,9 @@
-﻿namespace Bootloader_GUI_Windows
+﻿using System;
+using System.IO.Ports;
+
+namespace Bootloader_GUI_Windows
 {
-    partial class main_page
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +31,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(main_page));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.status_groupbox = new System.Windows.Forms.GroupBox();
             this.statusbar = new System.Windows.Forms.ProgressBar();
             this.image_selection_groupbox = new System.Windows.Forms.GroupBox();
@@ -174,6 +177,7 @@
             this.rts_checkbox.TabIndex = 7;
             this.rts_checkbox.Text = "RTS";
             this.rts_checkbox.UseVisualStyleBackColor = true;
+            this.rts_checkbox.CheckedChanged += new System.EventHandler(this.Rts_checkbox_CheckedChanged);
             // 
             // parity_checkbox
             // 
@@ -286,7 +290,7 @@
             this.verbose.TabIndex = 0;
             this.verbose.Text = "";
             // 
-            // main_page
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -300,7 +304,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "main_page";
+            this.Name = "MainForm";
             this.Text = "MicroLoader";
             this.status_groupbox.ResumeLayout(false);
             this.image_selection_groupbox.ResumeLayout(false);
