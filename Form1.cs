@@ -27,7 +27,6 @@ namespace Bootloader_GUI_Windows
             public bool isRTSRequested;                    // RTS Requested? 
             public StopBits num_of_stopbits;                   // Two stop bits requested? 
             public String port_name;                         // COM port name 
-            public bool port_state;                        // Status of the port ( Open or Close )
         }
 
         // Variable declarations
@@ -49,7 +48,6 @@ namespace Bootloader_GUI_Windows
             current_port_configs.isDTRRequested                     = dtr_checkbox.Checked;
             current_port_configs.isRTSRequested                     = rts_checkbox.Checked;
             current_port_configs.num_of_stopbits                    = StopBits.One;
-            current_port_configs.port_state                         = false;
 
             // Delegates declaration 
             attachDelegate  = new PortUpdate(deviceAttachEvent);
@@ -121,11 +119,8 @@ namespace Bootloader_GUI_Windows
         private void Port_open_close_button_Click(object sender, EventArgs e)
         {
             // Lets determine the current state of the button 
-            if (current_port_configs.port_state == false)         // Port is close at this point
+            if ( currentport.IsOpen )         // Port is close at this point
             {
-                // Lets update the port settings first 
-                current_port_configs.port_state = true;
-
                 //Lets update the name of the button 
                 port_open_close_button.Text = "Close";
 
@@ -152,9 +147,6 @@ namespace Bootloader_GUI_Windows
             }
             else                            // Port is open already 
             {
-                // Lets update the port settings first 
-                current_port_configs.port_state = false;
-
                 //Lets update the name of the button 
                 port_open_close_button.Text = "Open";
 
